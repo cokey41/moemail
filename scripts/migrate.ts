@@ -48,10 +48,14 @@ async function migrate() {
 
     const dbName = config.d1_databases[0].database_name
 
-    // Generate migrations
-    console.log('Generating migrations...')
-    await execAsync('drizzle-kit generate')
-    
+    // Only generate when explicitly requested (CI deploy should use committed migrations)
+    if (process.env.DRIZZLE_GENERATE === '1') {
+      console.log('Generating migrations...')
+      await execAsync('drizzle-kit generate')
+    } else {
+      console.log('Skipping drizzle-kit generate (using committed migrations in drizzle/)')
+    }
+
     // Applying migrations
     console.log(`Applying migrations to ${mode} database: ${dbName}`)
     await execAsync(`wrangler d1 migrations apply ${dbName} --${mode}`)
