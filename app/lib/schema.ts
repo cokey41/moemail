@@ -152,7 +152,30 @@ export const messageShares = sqliteTable('message_share', {
   tokenIdx: index('message_share_token_idx').on(table.token),
 }));
 
-
+export const smtpCredentials = sqliteTable("smtp_credential", {
+  id: text("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
+  emailId: text("email_id")
+    .notNull()
+    .references(() => emails.id, { onDelete: "cascade" }),
+  userId: text("user_id")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  username: text("username").notNull(),
+  passwordHash: text("password_hash").notNull(),
+  enabled: integer("enabled", { mode: "boolean" }).notNull().default(true),
+  name: text("name"),
+  createdAt: integer("created_at", { mode: "timestamp_ms" })
+    .notNull()
+    .$defaultFn(() => new Date()),
+  updatedAt: integer("updated_at", { mode: "timestamp_ms" })
+    .notNull()
+    .$defaultFn(() => new Date()),
+  lastUsedAt: integer("last_used_at", { mode: "timestamp_ms" }),
+}, (table) => ({
+  emailIdIdx: index("smtp_credential_email_id_idx").on(table.emailId),
+  userIdIdx: index("smtp_credential_user_id_idx").on(table.userId),
+  usernameIdx: index("smtp_credential_username_idx").on(table.username),
+}))
 
 export const apiKeysRelations = relations(apiKeys, ({ one }) => ({
   user: one(users, {
@@ -175,6 +198,7 @@ export const userRolesRelations = relations(userRoles, ({ one }) => ({
 export const usersRelations = relations(users, ({ many }) => ({
   userRoles: many(userRoles),
   apiKeys: many(apiKeys),
+  smtpCredentials: many(smtpCredentials),
 }));
 
 export const rolesRelations = relations(roles, ({ many }) => ({
@@ -194,3 +218,14 @@ export const messageSharesRelations = relations(messageShares, ({ one }) => ({
     references: [messages.id],
   }),
 }));
+
+export const smtpCredentialsRelations = relations(smtpCredentials, ({ one }) => ({
+  email: one(emails, {
+    fields: [smtpCredentials.emailId],
+    references: [emails.id],
+  }),
+  user: one(users, {
+    fields: [smtpCredentials.userId],
+    references: [users.id],
+  }),
+}))
