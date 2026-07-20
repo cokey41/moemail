@@ -6,6 +6,7 @@ import { EmailList } from "./email-list"
 import { MessageListContainer } from "./message-list-container"
 import { MessageView } from "./message-view"
 import { SendDialog } from "./send-dialog"
+import { SmtpCredentialsPanel } from "./smtp-credentials-panel"
 import { cn } from "@/lib/utils"
 import { useCopy } from "@/hooks/use-copy"
 import { useSendPermission } from "@/hooks/use-send-permission"
@@ -95,14 +96,17 @@ export function ThreeColumnLayout() {
             </h2>
           </div>
           {selectedEmail && (
-            <div className="flex-1 overflow-auto">
-              <MessageListContainer
-                email={selectedEmail}
-                onMessageSelect={handleMessageSelect}
-                selectedMessageId={selectedMessageId}
-                refreshTrigger={refreshTrigger}
-              />
-            </div>
+            <>
+              <div className="flex-1 overflow-auto min-h-0">
+                <MessageListContainer
+                  email={selectedEmail}
+                  onMessageSelect={handleMessageSelect}
+                  selectedMessageId={selectedMessageId}
+                  refreshTrigger={refreshTrigger}
+                />
+              </div>
+              <SmtpCredentialsPanel emailId={selectedEmail.id} />
+            </>
           )}
         </div>
 
@@ -171,7 +175,7 @@ export function ThreeColumnLayout() {
                   )}
                 </div>
               </div>
-              <div className="flex-1 overflow-auto">
+              <div className="flex-1 overflow-auto min-h-0">
                 <MessageListContainer
                   email={selectedEmail}
                   onMessageSelect={handleMessageSelect}
@@ -179,6 +183,7 @@ export function ThreeColumnLayout() {
                   refreshTrigger={refreshTrigger}
                 />
               </div>
+              <SmtpCredentialsPanel emailId={selectedEmail.id} />
             </div>
           )}
 
