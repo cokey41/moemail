@@ -1,0 +1,11 @@
+services:
+  moemail-smtp-gateway:
+    build: .
+    container_name: moemail-smtp-gateway
+    restart: unless-stopped
+    ports:
+      - "587:587"
+      - "465:465"
+    env_file: .env
+    volumes:
+      - ./certs:/certs:ro
