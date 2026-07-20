@@ -1,0 +1,9 @@
+{
+  "name": "moemail-smtp-gateway",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "mailparser": "^3.7.2",
+    "smtp-server": "^3.13.6"
+  }
+}
