@@ -6,16 +6,21 @@ export const runtime = 'edge'
 // 要求回调 iss 必须等于占位 issuer（authjs.dev），不匹配则拒绝整个回调
 // （CallbackRouteError -> error=Configuration）。防 mix-up 已由 state/PKCE 保证，
 // 这里在进入 Auth 处理前剥掉该参数。
+const handleAuthGet = authGET as unknown as (
+  request: Request,
+  ctx: { params: Promise<{ nextauth: string[] }> }
+) => Promise<Response>
+
 export async function GET(
   request: Request,
   ctx: { params: Promise<{ nextauth: string[] }> }
 ) {
   const url = new URL(request.url)
   if (!url.searchParams.has("iss")) {
-    return authGET(request, ctx)
+    return handleAuthGet(request, ctx)
   }
   url.searchParams.delete("iss")
-  return authGET(
+  return handleAuthGet(
     new Request(url.toString(), { method: "GET", headers: request.headers }),
     ctx
   )
